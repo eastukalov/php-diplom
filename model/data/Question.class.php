@@ -4,17 +4,23 @@ namespace model\data;
 
 class Question extends Category
 {
-    private $id;
+    private $questionId;
+    private $questionName;
     private $date;
-    private $name;
     private $user;
     private $status;
 
-    public function __construct($categoryId = 0, $categoryName = '', $id = 0, $name = '', $date = null, $user = null, $status = null)
-    {
+    public function __construct(
+        $categoryId = 0,
+        $categoryName = '',
+        $questionId = 0,
+        $questionName = '',
+        $date = null, $user = null,
+        $status = null
+    ) {
         parent::__construct ($categoryId, $categoryName);
-        $this->id = $id;
-        $this->name = $name;
+        $this->questionId = $questionId;
+        $this->questionName = $questionName;
         $this->date = $date;
         $this->user = $user;
         $this->status = $status;
@@ -22,23 +28,23 @@ class Question extends Category
 
     public function getQuestionId()
     {
-        return $this->id;
+        return $this->questionId;
     }
 
-    public function setQuestionId($id)
+    public function setQuestionId($questionId)
     {
-        $this->id = $id;
+        $this->questionId = $questionId;
         return $this;
     }
 
     public function getQuestionName()
     {
-        return $this->name;
+        return $this->questionName;
     }
 
-    public function setQuestionName($name)
+    public function setQuestionName($questionName)
     {
-        $this->name = $name;
+        $this->questionName = $questionName;
         return $this;
     }
 
@@ -71,101 +77,88 @@ class Question extends Category
 
     public function checkUpdate()
     {
-        $error = '';
         try {
-            if (is_null($this->user) || is_null($this->user->getName()) || trim($this->user->getName()) == '' || is_null($this->user->getEmail()) ||
-                trim($this->user->getEmail()) == '' || trim($this->name) == '' || is_null($this->status)  || is_null($this->status->getId()) || is_null($this->getCategoryId())) {
-                $error = 'miss';
-                throw new \Exception('При записи вопроса все поля должны быть заполнены');
+            if (null === $this->user || null === $this->user->getName() || trim($this->user->getName()) === '' ||
+                null === $this->user->getEmail() || trim($this->user->getEmail()) === '' || trim($this->questionName) === '' ||
+                null === $this->status  || null === $this->status->getId() || null === $this->getCategoryId()) {
+                throw new \LogicException('При записи вопроса все поля должны быть заполнены');
             }
-        }
-        catch (\Exception $e)
-        {
-            if ($error == 'miss') {
-                throw new \Exception($e->getMessage());
-            }
-
-            throw new \Exception('Ошибка при валидации записи вопроса');
+        } catch (\LogicException $e) {
+            throw $e;
+        } catch (\RuntimeException $e) {
+            throw new \RuntimeException('Ошибка при валидации записи вопроса', 0, $e);
         }
     }
 
-    public function updateQuestion($pdo)
+    public function updateQuestion(\PDO $pdo)
     {
         try {
-            $sql = "UPDATE questions SET questions.id_categories = :id_categories, questions.name = :name, questions.id_status = :id_status WHERE questions.id = :id;";
+            $sql = '
+                UPDATE 
+                    questions 
+                SET 
+                    questions.id_categories = :id_categories, 
+                    questions.name = :name, 
+                    questions.id_status = :id_status 
+                WHERE questions.id = :id;';
 
             $statement = $pdo->prepare($sql);
-            $statement->execute(['id'=>$this->id, 'id_categories'=>$this->getCategoryId(), 'name'=>$this->name, 'id_status'=>$this->status->getId()]);
-            $sql = "UPDATE users SET users.name = :name, users.email = :email WHERE users.id = :id;";
+            $statement->execute(['id'=>$this->questionId, 'id_categories'=>$this->getCategoryId(), 'name'=>$this->questionName, 'id_status'=>$this->status->getId()]);
+            $sql = 'UPDATE users SET users.name = :name, users.email = :email WHERE users.id = :id;';
             $statement = $pdo->prepare($sql);
             $statement->execute(['id'=>$this->user->getId(), 'name'=>$this->user->getName(), 'email'=>$this->user->getEmail()]);
-        }
-        catch (\Exception $e)
-        {
-            throw new \Exception('Ошибка изменения вопроса');
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Ошибка изменения вопроса', 0, $e);
         }
     }
 
-    public function deleteQuestion($pdo)
+    public function deleteQuestion(\PDO $pdo)
     {
         try {
-            $sql = "DELETE FROM questions WHERE questions.id=:id;";
+            $sql = 'DELETE FROM questions WHERE questions.id=:id;';
             $statement = $pdo->prepare($sql);
-            $statement->execute(['id'=>$this->id]);
-        }
-        catch (\Exception $e)
-        {
-            throw new \Exception('Ошибка удаления вопроса');
+            $statement->execute(['id'=>$this->questionId]);
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Ошибка удаления вопроса', 0, $e);
         }
     }
 
     public function checkInsert()
     {
-        $error = '';
         try {
 
-            if ((isset($_SESSION) && isset($_SESSION['admin']) && !empty($_SESSION['admin'])) ||
-                isset($_SESSION) && isset($_SESSION['userId']) && !empty($_SESSION['userId'])) {
+            if (!empty($_SESSION['admin']) || !empty($_SESSION['userId'])) {
 
-                if (trim($this->name) == '' || is_null($this->getCategoryId())) {
-                    $error = 'miss';
-                    throw new \Exception('При записи вопроса все поля должны быть заполнены');
+                if (trim($this->questionName) === '' || null === $this->getCategoryId()) {
+                    throw new \LogicException('При записи вопроса все поля должны быть заполнены');
                 }
 
-            } else {
-
-                if (is_null($this->user) || is_null($this->user->getName()) || trim($this->user->getName()) == '' || is_null($this->user->getEmail()) ||
-                    trim($this->user->getEmail()) == '' || trim($this->name) == '' || is_null($this->getCategoryId())) {
-                    $error = 'miss';
-                    throw new \Exception('При записи вопроса все поля должны быть заполнены');
-                }
+            } elseif (null === $this->user || null === $this->user->getName() || trim($this->user->getName()) === '' || null === $this->user->getEmail() ||
+                    trim($this->user->getEmail()) === '' || trim($this->questionName) === '' || null === $this->getCategoryId()) {
+                    throw new \LogicException('При записи вопроса все поля должны быть заполнены');
             }
-        }
-        catch (\Exception $e)
-        {
-            if ($error == 'miss') {
-                throw new \Exception($e->getMessage());
-            }
-
-            throw new \Exception('Ошибка при валидации записи вопроса');
+        } catch (\RuntimeException $e) {
+            throw new \RuntimeException('Ошибка при валидации записи вопроса', 0, $e);
+        } catch (\LogicException $e) {
+            throw $e;
         }
     }
 
-    public function insertQuestion($pdo)
+    public function insertQuestion(\PDO $pdo)
     {
         try {
 
-            if (isset($_SESSION) && isset($_SESSION['userId']) && !empty($_SESSION['userId'])) {
+            if (!empty($_SESSION['userId'])) {
                 $userId = $_SESSION['userId'];
             } else {
 
-                $sql = "SELECT users.id FROM users WHERE users.name = :name and users.email = :email;";
+                $sql = 'SELECT users.id FROM users WHERE users.name = :name and users.email = :email;';
                 $statement = $pdo->prepare($sql);
                 $statement->execute(['name' => $this->user->getName(), 'email' => $this->user->getEmail()]);
                 $row = $statement->fetch(\PDO::FETCH_OBJ);
 
                 if (!$row) {
-                    $sql = "INSERT INTO users ( name, email ) VALUES (:name, :email);";
+                    $sql = 'INSERT INTO users ( name, email ) VALUES (:name, :email);';
                     $statement = $pdo->prepare($sql);
                     $statement->execute(['name' => $this->user->getName(), 'email' => $this->user->getEmail()]);
                     $userId = $pdo->lastInsertId('users');
@@ -174,15 +167,14 @@ class Question extends Category
                 }
             }
 
-            $sql = "INSERT INTO questions ( id_categories, id_users, name ) VALUES (:id_categories, :id_user, :name);";
+            $sql = 'INSERT INTO questions ( id_categories, id_users, name ) VALUES (:id_categories, :id_user, :name);';
             $statement = $pdo->prepare($sql);
-            $statement->execute(['id_categories'=>$this->getCategoryId(), 'id_user'=>$userId, 'name'=>$this->name]);
+            $statement->execute(['id_categories'=>$this->getCategoryId(), 'id_user'=>$userId, 'name'=>$this->questionName]);
             $_SESSION['userId'] = $userId;
             $_SESSION['userName'] = $this->user->getName();
-        }
-        catch (\Exception $e)
-        {
-            throw new \Exception('Ошибка добавления вопроса');
+            $_SESSION['userEmail'] = $this->user->getEmail();
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Ошибка добавления вопроса', 0, $e);
         }
     }
 }

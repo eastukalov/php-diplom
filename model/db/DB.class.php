@@ -1,20 +1,16 @@
 <?php
 namespace model\db;
+require_once 'connection.php';
 
 class DB {
-    const SERVER = 'localhost';
-    const DATABASE = 'estukalov';
-    const USER = 'estukalov';
-    const PASSWORD = 'neto1205';
-
-    function getDBConnect ()
+    
+    public function getDBConnect ()
     {
-
         try {
-            $pdo = new \PDO('mysql:host='.self::SERVER.';dbname='.self::DATABASE.';charset=utf8', self::USER, self::PASSWORD);
+            $pdo = new \PDO('mysql:host='.SERVER.';dbname='.DATABASE.';charset=utf8', USER, PASSWORD);
         }
-        catch (\PDOException $e) {
-            throw new \Exception('Ошибка подключения к базе данных');
+        catch (\Exception $e) {
+            throw new \PDOException('Ошибка подключения к базе данных', 0, $e);
         }
 
         return $pdo;

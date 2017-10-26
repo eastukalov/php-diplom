@@ -6,12 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Выше 3 Мета-теги ** должны прийти в первую очередь в голове; любой другой руководитель контент *после* эти теги -->
     <title>Администрирование</title>
-
     <!-- Bootstrap -->
     <link href="../vendor/twbs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-
-
-
     <!-- HTML5 Shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- Предупреждение: Respond.js не работает при просмотре страницы через файл:// -->
     <!--[if lt IE 9]>
@@ -104,9 +100,9 @@
 
         <div class="form-actions">
             <div class="col-sm-offset-2 col-sm-10">
-                <input type="hidden" name="add_edit" value="{{ add_edit }}">
+                <input type="hidden" name="add_edit" value="{{ addEdit }}">
                 <input type="submit" class="btn btn-primary" value=
-                    {% if add_edit=='edit' %}
+                    {% if addEdit == 'edit' %}
                        "Сохранить"
                     {% else %}
                        "Добавить"

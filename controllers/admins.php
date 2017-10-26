@@ -1,20 +1,15 @@
 <?php
-require_once('../vendor/autoload.php');
-require_once('../autoloader.php');
-require_once('../assets/functions.php');
+require_once '../vendor/autoload.php';
 use model\data\Content;
 use model\db\DB;
 use model\data\Admin;
+use model\assets\Assist;
 session_start();
+$assist = new Assist();
+$assist->lockDirectInput();
 
-if (!isAdmin()) {
-    header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden');
-    echo "403 Forbidden";
-    exit;
-}
-
-$error = "";
-$add_edit = 'add';
+$error = '';
+$addEdit = 'add';
 $admin = null;
 $admins = null;
 
@@ -30,41 +25,35 @@ try {
     $content = new Content();
     $admins = $content->getAdmins($pdo);
 
-    if (isset($_GET['action']) && $_GET['action']=='edit' && !isset($_POST['login'])) {
-        $add_edit = 'edit';
+    if (isset($_GET['action']) && $_GET['action'] === 'edit' && !isset($_POST['login'])) {
+        $addEdit = 'edit';
     }
 
-    if (isGet()) {
+    if ($assist->isGet() && isset($_GET['action']) && !empty($_GET['id'])) {
+        $temp = new Admin();
+        $temp->setId($_GET['id']);
 
-        if (isset($_GET['action']) && isset($_GET['id']) && !empty($_GET['id'])) {
-            $temp = new Admin();
-            $temp->setId($_GET['id']);
-
-            if ($_GET['action'] == 'edit' && $add_edit == 'edit') {
-                $admin = $temp->selectAdmin($pdo);
-            }
-            elseif ($_GET['action'] == 'delete') {
-                $temp->deleteAdmin($pdo);
-            }
-
+        if ($_GET['action'] === 'edit' && $addEdit === 'edit') {
+            $admin = $temp->selectAdmin($pdo);
+        } elseif ($_GET['action'] === 'delete') {
+            $temp->deleteAdmin($pdo);
         }
 
     }
 
-    if (isPost()) {
+    if ($assist->isPost()) {
 
-        if (isAddEdit() && isset($_POST['login']) && isset($_POST['password'])) {
+        if ($assist->isAddEdit() && isset($_POST['login'], $_POST['password'])) {
             $temp = new Admin();
 
-            if (isset($_POST['add_edit']) && $_POST['add_edit'] == 'edit' && isset($_GET['id']) && !empty($_GET['id'])) {
+            if (isset($_POST['add_edit']) && $_POST['add_edit'] === 'edit' && !empty($_GET['id'])) {
                 $temp->setId($_GET['id'])
                     ->setLogin($_POST['login'])
                     ->setPassword($_POST['password']);
                 $admin = $temp;
                 $temp->checkAdmin($pdo, true, true, $_GET['id']);
                 $temp->updateAdmin($pdo);
-            }
-            else {
+            } else {
                 $temp->setLogin($_POST['login'])
                     ->setPassword($_POST['password']);
                 $admin = $temp;
@@ -76,13 +65,12 @@ try {
 
     }
 
-    if ((!empty($_POST) && isset($_POST['addedit'])) || (isset($_GET['action']) && $_GET['action']=='delete')) {
-        header("Location: admins.php");
+    if ((!empty($_POST) && isset($_POST['addedit'])) || (isset($_GET['action']) && $_GET['action'] === 'delete')) {
+        header('Location: admins.php');
         exit;
     }
 
-}
-catch (Exception $e) {
+} catch (\Exception $e) {
     $error = $e->getMessage();
 }
 
@@ -91,6 +79,6 @@ echo $twig->render('admins_admin.twig', [
     'error'=>$error,
     'admin'=>$admin,
     'tab'=>1,
-    'add_edit'=>$add_edit,
+    'addEdit'=>$addEdit,
     'adminId'=>$_SESSION['admin']
 ]);

@@ -1,20 +1,16 @@
 <?php
-require_once('../vendor/autoload.php');
-require_once('../autoloader.php');
-require_once('../assets/functions.php');
+require_once '../vendor/autoload.php';
 use model\data\Content;
 use model\db\DB;
 use model\data\Answer;
 use model\data\Question;
 use model\data\User;
 use model\data\Status;
+use model\assets\Assist;
 session_start();
 
-if (!isAdmin()) {
-    header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden');
-    echo "403 Forbidden";
-    exit;
-}
+$assist = new Assist();
+$assist->lockDirectInput();
 
 $loader = new Twig_Loader_Filesystem('../templates');
 $twig = new Twig_Environment($loader, array(
@@ -27,7 +23,7 @@ $answer = null;
 $categories = [];
 $statuses = [];
 $error = '';
-$add_edit = 'add';
+$addEdit = 'add';
 $editAnswer = '';
 
 try {
@@ -36,12 +32,12 @@ try {
     $categories = $content->getCategories($pdo);
     $statuses = $content->getStatuses($pdo);
 
-    if (isset($_GET['action']) && $_GET['action']=='edit' && !isset($_POST['answer'])) {
-        $add_edit = 'edit';
+    if (isset($_GET['action']) && $_GET['action'] === 'edit' && !isset($_POST['answer'])) {
+        $addEdit = 'edit';
     }
 
-    if (isGet()) {
-        if (!isset($_GET['id']) || empty($_GET['id'])) {
+    if ($assist->isGet()) {
+        if (empty($_GET['id'])) {
             throw new Exception('Ошибка Get-запроса');
         }
 
@@ -53,43 +49,40 @@ try {
 
         $answer = $answers[0];
 
-        if (isset($_GET['action']) && isset($_GET['answerId']) && !empty($_GET['answerId'])) {
+        if (isset($_GET['action']) && !empty($_GET['answerId'])) {
             $temp = new Answer();
             $temp->setAnswerId($_GET['answerId']);
 
-            if ($_GET['action'] == 'edit' && $add_edit == 'edit') {
+            if ($_GET['action'] === 'edit' && $addEdit === 'edit') {
                 $editAnswer = $temp->selectAnswer($pdo);
-            }
-            elseif ($_GET['action'] == 'delete') {
+            } elseif ($_GET['action'] === 'delete') {
                 $temp->deleteAnswer($pdo);
             }
 
         }
 
-    }
-    else {
+    } else {
         throw new Exception('Ошибка: не установлены Get-параметры');
     }
 
-    if (isPost()) {
+    if ($assist->isPost()) {
 
-        if (isAddEdit() && isset($_POST['answer']) & !empty($_POST['answer'])) {
+        if ($assist->isAddEdit() && !empty($_POST['answer'])) {
             $temp = new Answer();
 
-            if (isset($_POST['add_edit']) && $_POST['add_edit'] == 'edit' && isset($_GET['answerId']) && !empty($_GET['answerId'])) {
+            if (isset($_POST['add_edit']) && $_POST['add_edit'] === 'edit' && !empty($_GET['answerId'])) {
                 $temp->setAnswerId($_GET['answerId'])
                      ->setAnswerName($_POST['answer']);
                 $temp->updateAnswer($pdo);
-            }
-            else {
+            } else {
                 $temp->setQuestionId($_GET['id'])
                     ->setAnswerName($_POST['answer']);
                 $temp->insertAnswer($pdo);
             }
 
-        }
-        elseif (isEditQuestion()) {
+        } elseif ($assist->isEditQuestion() && !empty($answer)) {
             $temp = new Question();
+
             $temp->setQuestionId($_GET['id'])
                 ->setUser(new User($answer->getUser()->getId(), isset($_POST['name']) ? $_POST['name'] : '',
                     isset($_POST['email']) ? $_POST['email'] : ''))
@@ -98,32 +91,29 @@ try {
                 ->setCategoryId(isset($_POST['category']) ? $_POST['category'] : null);
             $temp->checkUpdate();
             $temp->updateQuestion($pdo);
-            header("Location: questions.php");
-        }
-        elseif (isCancel()) {
-            header("Location: questions.php");
+            header('Location: questions.php');
+        } elseif ($assist->isCancel()) {
+            header('Location: questions.php');
         }
 
     }
 
-    if ((!empty($_POST) && isset($_POST['addedit'])) || (isset($_GET['action']) && $_GET['action']=='delete')) {
-        header("Location: questions_edit.php?id=" . $_GET['id']);
+    if ((isset($_POST['addedit'])) || (isset($_GET['action']) && $_GET['action'] === 'delete')) {
+        header('Location: questions_edit.php?id=' . $_GET['id']);
         exit;
     }
 
+} catch (\Exception $e) {
+    $error = $e->getMessage();
+
+    if ($assist->isPost() && $assist->isEditQuestion()) {
+        $answer->getUser()->setName(isset($_POST['name']) ? $_POST['name']: '')
+                          ->setEmail(isset($_POST['email']) ? $_POST['email']: '');
+        $answer->setQuestionName(isset($_POST['question']) ? $_POST['question']: '')
+               ->setCategoryId(isset($_POST['category']) ? $_POST['category']: null);
+        $answer->getStatus()->setId(isset($_POST['status']) ? $_POST['status']: 0);
     }
-catch (Exception $e)
-    {
-        $error = $e->getMessage();
-        if (isPost() && isEditQuestion())
-        {
-            $answer->getUser()->setName(isset($_POST['name']) ? $_POST['name']: '')
-                              ->setEmail(isset($_POST['email']) ? $_POST['email']: '');
-            $answer->setQuestionName(isset($_POST['question']) ? $_POST['question']: '')
-                   ->setCategoryId(isset($_POST['category']) ? $_POST['category']: null);
-            $answer->getStatus()->setId(isset($_POST['status']) ? $_POST['status']: 0);
-        }
-    }
+}
 
 echo $twig->render('question_edit_admin.twig', [
     'categories'=>$categories,
@@ -132,5 +122,5 @@ echo $twig->render('question_edit_admin.twig', [
     'error'=>$error,
     'statuses'=>$statuses,
     'edit_answer'=>$editAnswer,
-    'add_edit'=>$add_edit
+    'addEdit'=>$addEdit
 ]);

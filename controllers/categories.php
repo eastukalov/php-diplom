@@ -1,20 +1,15 @@
 <?php
-require_once('../vendor/autoload.php');
-require_once('../autoloader.php');
-require_once('../assets/functions.php');
+require_once '../vendor/autoload.php';
 use model\data\Content;
 use model\db\DB;
 use model\data\Category;
+use model\assets\Assist;
 session_start();
+$assist = new Assist();
+$assist->lockDirectInput();
 
-if (!isAdmin()) {
-    header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden');
-    echo "403 Forbidden";
-    exit;
-}
-
-$error = "";
-$add_edit = 'add';
+$error = '';
+$addEdit = 'add';
 $category = null;
 $categories = null;
 
@@ -31,44 +26,35 @@ try {
     $content = new Content();
     $categories = $content->getCategories($pdo, 1);
 
-    if (isset($_GET['action']) && $_GET['action']=='edit' && !isset($_POST['categoryName'])) {
-        $add_edit = 'edit';
+    if (isset($_GET['action']) && $_GET['action'] === 'edit' && !isset($_POST['categoryName'])) {
+        $addEdit = 'edit';
     }
 
-    if (isGet()) {
+    if ($assist->isGet() && isset($_GET['action']) && !empty($_GET['id'])) {
+        $temp = new Category();
+        $temp->setCategoryId($_GET['id']);
 
-        if (isset($_GET['action']) && isset($_GET['id']) && !empty($_GET['id'])) {
-            $temp = new Category();
-            $temp->setCategoryId($_GET['id']);
-
-            if ($_GET['action'] == 'edit' && $add_edit == 'edit') {
-                $category = $temp->selectCategory($pdo);
-            }
-            elseif ($_GET['action'] == 'delete') {
-                $temp->deleteCategory($pdo);
-            }
-
+        if ($_GET['action'] === 'edit' && $addEdit === 'edit') {
+            $category = $temp->selectCategory($pdo);
+        } elseif ($_GET['action'] === 'delete') {
+            $temp->deleteCategory($pdo);
         }
 
     }
-    else {
 
-    }
+    if ($assist->isPost()) {
 
-    if (isPost()) {
-
-        if (isAddEdit() && isset($_POST['categoryName'])) {
+        if ($assist->isAddEdit() && isset($_POST['categoryName'])) {
             $temp = new Category();
 
 
-            if (isset($_POST['add_edit']) && $_POST['add_edit'] == 'edit' && isset($_GET['id']) && !empty($_GET['id'])) {
+            if (isset($_POST['add_edit']) && $_POST['add_edit'] === 'edit' && !empty($_GET['id'])) {
                 $temp->setCategoryId($_GET['id'])
                     ->setCategoryName($_POST['categoryName']);
                 $category = $temp->getCategoryName();
                 $temp->checkCategory($pdo);
                 $temp->updateCategory($pdo);
-            }
-            else {
+            } else {
                 $temp->setCategoryName($_POST['categoryName']);
                 $category = $temp->getCategoryName();
                 $temp->checkCategory($pdo);
@@ -79,13 +65,12 @@ try {
 
     }
 
-    if ((!empty($_POST) && isset($_POST['addedit'])) || (isset($_GET['action']) && $_GET['action']=='delete')) {
-        header("Location: categories.php");
+    if ((isset($_POST['addedit'])) || (isset($_GET['action']) && $_GET['action'] === 'delete')) {
+        header('Location: categories.php');
         exit;
     }
 
-}
-catch (Exception $e) {
+} catch (\Exception $e) {
     $error = $e->getMessage();
 }
 
@@ -94,5 +79,5 @@ echo $twig->render('categories_admin.twig', [
     'error'=>$error,
     'category'=>$category,
     'tab'=>2,
-    'add_edit'=>$add_edit
+    'addEdit'=>$addEdit
 ]);

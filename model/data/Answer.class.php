@@ -4,92 +4,92 @@ namespace model\data;
 
 class Answer extends Question
 {
-    private $id;
-    private $name;
+    private $answerId;
+    private $answerName;
 
-    public function __construct($categoryId = null, $categoryName = '', $questionId = null, $questionName = '', $date = null, $user = null, $status = null, $id = 0, $name = '')
-    {
+    public function __construct(
+        $categoryId = null,
+        $categoryName = '',
+        $questionId = null,
+        $questionName = '', $date = null,
+        $user = null,
+        $status = null,
+        $answerId = 0,
+        $answerName = ''
+    ) {
         parent::__construct ($categoryId, $categoryName, $questionId, $questionName, $date, $user, $status);
-        $this->id = $id;
-        $this->name = $name;
+        $this->answerId = $answerId;
+        $this->answerName = $answerName;
     }
 
 
     public function getAnswerId()
     {
-        return $this->id;
+        return $this->answerId;
     }
 
-    public function setAnswerId($id)
+    public function setAnswerId($answerId)
     {
-        $this->id = $id;
+        $this->answerId = $answerId;
         return $this;
     }
 
     public function getAnswerName()
     {
-        return $this->name;
+        return $this->answerName;
     }
 
-    public function setAnswerName($name)
+    public function setAnswerName($answerName)
     {
-        $this->name = $name;
+        $this->answerName = $answerName;
         return $this;
     }
 
-    public function updateAnswer($pdo)
+    public function updateAnswer(\PDO $pdo)
     {
         try {
-            $sql = "UPDATE answers SET answers.name = :name WHERE answers.id = :id;";
+            $sql = 'UPDATE answers SET answers.name = :name WHERE answers.id = :id;';
 
             $statement = $pdo->prepare($sql);
-            $statement->execute(['id'=>$this->id, 'name'=>$this->name]);
-        }
-        catch (\Exception $e)
-        {
-            throw new \Exception('Ошибка при изменении ответа');
+            $statement->execute(['id'=>$this->answerId, 'name'=>$this->answerName]);
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Ошибка при изменении ответа', 0, $e);
         }
     }
 
-    public function insertAnswer($pdo)
+    public function insertAnswer(\PDO $pdo)
     {
         try {
-            $sql = "INSERT INTO answers ( id_questions, name ) VALUES ( :id_questions, :name);";
+            $sql = 'INSERT INTO answers ( id_questions, name ) VALUES ( :id_questions, :name);';
 
             $statement = $pdo->prepare($sql);
-            $statement->execute(['id_questions'=>$this->getQuestionId(), 'name'=>$this->name]);
-        }
-        catch (\Exception $e)
-        {
-            throw new \Exception('Ошибка добавления ответа');
+            $statement->execute(['id_questions'=>$this->getQuestionId(), 'name'=>$this->answerName]);
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Ошибка добавления ответа', 0, $e);
         }
     }
 
-    public function selectAnswer($pdo)
+    public function selectAnswer(\PDO $pdo)
     {
         try {
-            $sql = "SELECT answers.name FROM answers WHERE answers.id = :id;";
+            $sql = 'SELECT answers.name FROM answers WHERE answers.id = :id;';
             $statement = $pdo->prepare($sql);
-            $statement->execute(['id'=>$this->id]);
-            $row = $statement -> fetchall(\PDO::FETCH_COLUMN, 0);
+            $statement->execute(['id'=>$this->answerId]);
+            $row = $statement->fetchall(\PDO::FETCH_COLUMN, 0);
             return $row[0];
-        }
-        catch (\Exception $e)
-        {
-            throw new \Exception('Ошибка считывания ответа');
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Ошибка считывания ответа', 0, $e);
         }
     }
 
-    public function deleteAnswer($pdo)
+    public function deleteAnswer(\PDO $pdo)
     {
         try {
-            $sql = "DELETE FROM answers WHERE answers.id=:id;";
+            $sql = 'DELETE FROM answers WHERE answers.id=:id;';
             $statement = $pdo->prepare($sql);
-            $statement->execute(['id'=>$this->id]);
-        }
-        catch (\Exception $e)
-        {
-            throw new \Exception('Ошибка удаления ответа');
+            $statement->execute(['id'=>$this->answerId]);
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Ошибка удаления ответа', 0, $e);
         }
     }
 }

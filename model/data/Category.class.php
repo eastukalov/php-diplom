@@ -4,36 +4,36 @@ namespace model\data;
 
 class Category
 {
-    private $id;
-    private $name;
+    private $categoryId;
+    private $categoryName;
     private $count = [];
 
-    public function __construct($id = 0, $name = '')
+    public function __construct($categoryId = 0, $categoryName = '')
     {
-        $this->id = $id;
-        $this->name = $name;
+        $this->categoryId = $categoryId;
+        $this->categoryName = $categoryName;
     }
 
     public function getCategoryId()
     {
-        return $this->id;
+        return $this->categoryId;
     }
 
-    public function setCategoryId($id)
+    public function setCategoryId($categoryId)
     {
-        $this->id = $id;
+        $this->categoryId = $categoryId;
 
         return $this;
     }
 
     public function getCategoryName()
     {
-        return $this->name;
+        return $this->categoryName;
     }
 
-    public function setCategoryName($name)
+    public function setCategoryName($categoryName)
     {
-        $this->name = $name;
+        $this->categoryName = $categoryName;
         return $this;
     }
 
@@ -48,88 +48,72 @@ class Category
         return $this;
     }
 
-    public function selectCategory($pdo)
+    public function selectCategory(\PDO $pdo)
     {
         try {
-            $sql = "SELECT categories.name FROM categories WHERE categories.id = :id;";
+            $sql = 'SELECT categories.name FROM categories WHERE categories.id = :id;';
             $statement = $pdo->prepare($sql);
-            $statement->execute(['id'=>$this->id]);
-            $row = $statement -> fetch(\PDO::FETCH_OBJ);
-            return $row->name;
-        }
-        catch (\Exception $e)
-        {
-            throw new \Exception('Ошибка считывания темы');
+            $statement->execute(['id'=>$this->categoryId]);
+            return $statement->fetch(\PDO::FETCH_OBJ)->name;
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Ошибка считывания темы', 0, $e);
         }
     }
 
-    public function deleteCategory($pdo)
+    public function deleteCategory(\PDO $pdo)
     {
         try {
-            $sql = "DELETE FROM categories WHERE categories.id=:id;";
+            $sql = 'DELETE FROM categories WHERE categories.id=:id;';
             $statement = $pdo->prepare($sql);
-            $statement->execute(['id'=>$this->id]);
-        }
-        catch (\Exception $e)
-        {
-            throw new \Exception('Ошибка удаления темы');
+            $statement->execute(['id'=>$this->categoryId]);
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Ошибка удаления темы', 0, $e);
         }
     }
 
-    public function checkCategory($pdo)
+    public function checkCategory(\PDO $pdo)
     {
-        $error = '';
         try {
 
-            if (is_null($this->name) || trim($this->name) == '') {
-                $error = 'miss';
-                throw new \Exception('При записи темы все поля должны быть заполнены');
+            if (null === $this->categoryName || trim($this->categoryName) === '') {
+                throw new \LogicException('При записи темы все поля должны быть заполнены');
             }
 
-            $sql = "SELECT categories.name FROM categories WHERE categories.name = :name;";
+            $sql = 'SELECT categories.name FROM categories WHERE categories.name = :name;';
             $statement = $pdo->prepare($sql);
-            $statement->execute(['name'=>$this->name]);
+            $statement->execute(['name'=>$this->categoryName]);
             $row = $statement->fetch(\PDO::FETCH_OBJ);
 
             if ($row) {
-                $error = 'miss';
-                throw new \Exception('Такая тема уже существует');
+                throw new \LogicException('Такая тема уже существует');
             }
 
-        }
-        catch (\Exception $e)
-        {
-            if ($error == 'miss') {
-                throw new \Exception($e->getMessage());
-            }
-
-            throw new \Exception('Ошибка при валидации записи темы');
+        } catch (\RuntimeException $e) {
+            throw new \RuntimeException('Ошибка при валидации записи темы', 0, $e);
+        } catch (\LogicException $e) {
+            throw $e;
         }
     }
 
-    public function updateCategory($pdo)
+    public function updateCategory(\PDO $pdo)
     {
         try {
-            $sql = "UPDATE categories SET categories.name = :name WHERE categories.id = :id;";
+            $sql = 'UPDATE categories SET categories.name = :name WHERE categories.id = :id;';
             $statement = $pdo->prepare($sql);
-            $statement->execute(['id'=>$this->id, 'name'=>$this->name]);
-        }
-        catch (\Exception $e)
-        {
-            throw new \Exception('Ошибка изменения темы');
+            $statement->execute(['id'=>$this->categoryId, 'name'=>$this->categoryName]);
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Ошибка изменения темы', 0 , $e);
         }
     }
 
-    public function insertCategory($pdo)
+    public function insertCategory(\PDO $pdo)
     {
         try {
-            $sql = "INSERT INTO categories ( name ) VALUES (:name);";
+            $sql = 'INSERT INTO categories ( name ) VALUES (:name);';
             $statement = $pdo->prepare($sql);
-            $statement->execute(['name'=>$this->name]);
-        }
-        catch (\Exception $e)
-        {
-            throw new \Exception('Ошибка добавления темы');
+            $statement->execute(['name'=>$this->categoryName]);
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Ошибка добавления темы', 0, $e);
         }
     }
 
