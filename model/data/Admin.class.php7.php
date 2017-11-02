@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types = 1);
 namespace model\data;
 
 class Admin
@@ -14,7 +14,7 @@ class Admin
      * @param string $login
      * @param string $password
      */
-    public function __construct($id = 0, $login = '', $password = '')
+    public function __construct(int $id = 0, string $login = '', string $password = '')
     {
         $this->id = $id;
         $this->login = $login;
@@ -24,17 +24,15 @@ class Admin
     /**
      * @return int
      */
-    public function getId()
-    {
+    public function getId() :int {
         return $this->id;
     }
 
     /**
-     * @param int $id
-     * @return $this
+     * @param $id
+     * @return Admin
      */
-    public function setId($id)
-    {
+    public function setId(int $id) :Admin {
         $this->id = $id;
         return $this;
     }
@@ -42,17 +40,15 @@ class Admin
     /**
      * @return string
      */
-    public function getLogin()
-    {
+    public function getLogin() :string {
         return $this->login;
     }
 
     /**
-     * @param string $login
-     * @return $this
+     * @param $login
+     * @return Admin
      */
-    public function setLogin($login)
-    {
+    public function setLogin(string $login) :Admin {
         $this->login = $login;
         return $this;
     }
@@ -60,17 +56,15 @@ class Admin
     /**
      * @return string
      */
-    public function getPassword()
-    {
+    public function getPassword() :string {
         return $this->password;
     }
 
     /**
-     * @param string $password
-     * @return $this
+     * @param $password
+     * @return Admin
      */
-    public function setPassword($password)
-    {
+    public function setPassword(string $password) :Admin {
         $this->password = $password;
         return $this;
     }
@@ -94,8 +88,7 @@ class Admin
     /**
      * @param \PDO $pdo
      */
-    public function deleteAdmin(\PDO $pdo)
-    {
+    public function deleteAdmin(\PDO $pdo) :void {
         try {
             $sql = 'DELETE FROM admins WHERE admins.id=:id;';
             $statement = $pdo->prepare($sql);
@@ -111,8 +104,7 @@ class Admin
      * @param bool $edit
      * @param int $id
      */
-    public function checkAdmin(\PDO $pdo, $validate = false, $edit = false, $id = 0)
-    {
+    public function checkAdmin(\PDO $pdo, bool $validate = false, bool $edit = false, int $id = 0) :void {
         try {
 
             if (null === $this->login || null === $this->password || trim($this->login) === '' || trim($this->password) === '') {
@@ -148,8 +140,7 @@ class Admin
     /**
      * @param \PDO $pdo
      */
-    public function updateAdmin(\PDO $pdo)
-    {
+    public function updateAdmin(\PDO $pdo) :void {
         try {
             $sql = 'UPDATE admins SET admins.login = :login, admins.password = :password WHERE admins.id = :id;';
             $statement = $pdo->prepare($sql);
@@ -162,8 +153,7 @@ class Admin
     /**
      * @param \PDO $pdo
      */
-    public function insertAdmin(\PDO $pdo)
-    {
+    public function insertAdmin(\PDO $pdo) :void {
         try {
             $sql = 'INSERT INTO admins ( login, password ) VALUES (:login, :password);';
             $statement = $pdo->prepare($sql);
@@ -176,8 +166,7 @@ class Admin
     /**
      * @param \PDO $pdo
      */
-    public function validateAdmin (\PDO $pdo)
-    {
+    public function validateAdmin (\PDO $pdo) :void {
         {
             try {
                 $sql = 'SELECT admins.id FROM admins WHERE admins.login = :login and admins.password = :password;';

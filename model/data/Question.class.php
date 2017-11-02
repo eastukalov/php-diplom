@@ -10,13 +10,24 @@ class Question extends Category
     private $user;
     private $status;
 
+    /**
+     * Question constructor.
+     * @param int $categoryId
+     * @param string $categoryName
+     * @param int $questionId
+     * @param string $questionName
+     * @param \DateTime $date
+     * @param User $user
+     * @param Status $status
+     */
     public function __construct(
         $categoryId = 0,
         $categoryName = '',
         $questionId = 0,
         $questionName = '',
-        $date = null, $user = null,
-        $status = null
+        $date = null,
+        User $user = null,
+        Status $status = null
     ) {
         parent::__construct ($categoryId, $categoryName);
         $this->questionId = $questionId;
@@ -26,55 +37,89 @@ class Question extends Category
         $this->status = $status;
     }
 
+    /**
+     * @return int
+     */
     public function getQuestionId()
     {
         return $this->questionId;
     }
 
+    /**
+     * @param int $questionId
+     * @return $this
+     */
     public function setQuestionId($questionId)
     {
         $this->questionId = $questionId;
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getQuestionName()
     {
         return $this->questionName;
     }
 
+    /**
+     * @param string $questionName
+     * @return $this
+     */
     public function setQuestionName($questionName)
     {
         $this->questionName = $questionName;
         return $this;
     }
 
+    /**
+     * @return \DateTime|null
+     */
     public function getDate()
     {
         return $this->date;
     }
 
+    /**
+     * @return User|null
+     */
     public function getUser()
     {
         return $this->user;
     }
 
-    public function setUser($user)
+    /**
+     * @param User $user
+     * @return $this
+     */
+    public function setUser(User $user)
     {
         $this->user = $user;
         return $this;
     }
 
+    /**
+     * @return Status|null
+     */
     public function getStatus()
     {
         return $this->status;
     }
 
-    public function setStatus($status)
+    /**
+     * @param Status $status
+     * @return $this
+     */
+    public function setStatus(Status $status)
     {
         $this->status = $status;
         return $this;
     }
 
+    /**
+     *
+     */
     public function checkUpdate()
     {
         try {
@@ -90,6 +135,9 @@ class Question extends Category
         }
     }
 
+    /**
+     * @param \PDO $pdo
+     */
     public function updateQuestion(\PDO $pdo)
     {
         try {
@@ -112,6 +160,9 @@ class Question extends Category
         }
     }
 
+    /**
+     * @param \PDO $pdo
+     */
     public function deleteQuestion(\PDO $pdo)
     {
         try {
@@ -123,6 +174,9 @@ class Question extends Category
         }
     }
 
+    /**
+     *
+     */
     public function checkInsert()
     {
         try {
@@ -144,6 +198,9 @@ class Question extends Category
         }
     }
 
+    /**
+     * @param \PDO $pdo
+     */
     public function insertQuestion(\PDO $pdo)
     {
         try {

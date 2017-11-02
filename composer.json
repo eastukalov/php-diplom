@@ -14,7 +14,12 @@
             "model/data/Question.class.php",
             "model/data/Status.class.php",
             "model/data/User.class.php",
-            "model/db/DB.class.php"
+            "model/db/DB.class.php",
+            "controllers/main.php",
+            "controllers/admins.php",
+            "controllers/categories.php",
+            "controllers/questions.php",
+            "controllers/questions_edit.php"
         ]
     }
 }

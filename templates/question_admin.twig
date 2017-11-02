@@ -9,9 +9,9 @@
                 Темы <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-                <li><a href="../controllers/questions.php?id=-1&action=filter">Все</a> </li>
+                <li><a href="index.php?mode=Questions&id=-1&action=filter">Все</a> </li>
                 {% for category in categories %}
-                    <li><a href="../controllers/questions.php?id={{ category.getCategoryId }}&action=filter">{{ category.getCategoryName }}</a> </li>
+                    <li><a href="index.php?mode=Questions&id={{ category.getCategoryId }}&action=filter">{{ category.getCategoryName }}</a> </li>
                 {% endfor %}
             </ul>
         </li>
@@ -23,8 +23,8 @@
                 Сортировка <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-                <li><a href="../controllers/questions.php?id=1&action=sort">Свежие неотвеченные вопросы наверху</a></li>
-                <li><a href="../controllers/questions.php?id=2&action=sort">По категории, по дате добавления</a></li>
+                <li><a href="index.php?mode=Questions&id=1&action=sort">Свежие неотвеченные вопросы наверху</a></li>
+                <li><a href="index.php?mode=Questions&id=2&action=sort">По категории, по дате добавления</a></li>
             </ul>
         </li>
     </ul>
@@ -97,8 +97,8 @@
                                     <span class="sr-only">Toggle Dropdown</span>
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a href="../controllers/questions_edit.php?id={{ answer.getQuestionId }}">Изменить</a></li>
-                                    <li><a href="../controllers/questions.php?id={{ answer.getQuestionId }}&action=delete">Удалить</a></li>
+                                    <li><a href="index.php?mode=Questions_edit&id={{ answer.getQuestionId }}">Изменить</a></li>
+                                    <li><a href="index.php?mode=Questions&id={{ answer.getQuestionId }}&action=delete">Удалить</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -111,8 +111,8 @@
     </table>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script src="../vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="../js/datatables.min.js"></script>
+<script src="vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="js/datatables.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
         var table = $('#main_table').DataTable({
@@ -137,14 +137,7 @@
             }
         });
 
-//        table.page(1).draw('page');
-    } );
+    });
 
-
-
-    //    $('#myTabs a').click(function (e) {
-    //        e.preventDefault()
-    //        $(this).tab('show')
-    //    })
 </script>
 {% endblock %}

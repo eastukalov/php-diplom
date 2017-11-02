@@ -7,7 +7,7 @@
     <!-- Выше 3 Мета-теги ** должны прийти в первую очередь в голове; любой другой руководитель контент *после* эти теги -->
     <title>Администрирование</title>
     <!-- Bootstrap -->
-    <link href="../vendor/twbs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/twbs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- HTML5 Shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- Предупреждение: Respond.js не работает при просмотре страницы через файл:// -->
     <!--[if lt IE 9]>
@@ -132,8 +132,8 @@
                                 <span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a href="../controllers/questions_edit.php?id={{ ans.getQuestionId }}&answerId={{ ans.getAnswerId }}&action=edit">Изменить</a></li>
-                                <li><a href="../controllers/questions_edit.php?id={{ ans.getQuestionId }}&answerId={{ ans.getAnswerId }}&action=delete">Удалить</a></li>
+                                <li><a href="index.php?mode=Questions_edit&id={{ ans.getQuestionId }}&answerId={{ ans.getAnswerId }}&action=edit">Изменить</a></li>
+                                <li><a href="index.php?mode=Questions_edit&id={{ ans.getQuestionId }}&answerId={{ ans.getAnswerId }}&action=delete">Удалить</a></li>
                             </ul>
                         </div>
                     </div>
@@ -145,7 +145,7 @@
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script src="../vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
 <script>
     $(function() {
         $('addedit').click(function() {

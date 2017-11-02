@@ -10,6 +10,12 @@ class Content
         '2'=>'categories.name, questions.date DESC'
     ];
 
+    /**
+     * @param \PDO $pdo
+     * @param int $countQuestions
+     * @param int $id
+     * @return Category[]
+     */
     public function getCategories(\PDO $pdo, $countQuestions = 0, $id = 0)
     {
         try {
@@ -59,6 +65,13 @@ class Content
         }
     }
 
+    /**
+     * @param \PDO $pdo
+     * @param int $id
+     * @param int $categoryId
+     * @param int $order
+     * @return Answer[]
+     */
     public function getCategoriesQuestionsAnswers(\PDO $pdo, $id = 0, $categoryId = -1, $order = 0)
     {
         try {
@@ -103,7 +116,17 @@ class Content
             $statement->execute($parameters);
 
             while ($row = $statement->fetch(\PDO::FETCH_OBJ)) {
-                $this->array[] = new Answer( $row->categoryId, $row->category, $row->id, $row->question, $row->date, new User( $row->userId, $row->user, $row->email), new Status($row->statusId, $row->status), $row->answerId, $row->answer);
+                $this->array[] = new Answer(
+                    $row->categoryId,
+                    $row->category,
+                    $row->id,
+                    $row->question,
+                    $row->date,
+                    new User( $row->userId, $row->user, $row->email),
+                    new Status($row->statusId, $row->status),
+                    $row->answerId,
+                    $row->answer
+                );
             }
 
             return $this->array;
@@ -111,6 +134,11 @@ class Content
             throw new \RuntimeException('Ошибка получения списка тем', 0, $e);
         }
     }
+
+    /**
+     * @param \PDO $pdo
+     * @return Status[]
+     */
     public function getStatuses(\PDO $pdo)
     {
         try {
@@ -130,6 +158,10 @@ class Content
         }
     }
 
+    /**
+     * @param \PDO $pdo
+     * @return Question[]
+     */
     public function getQuestionsWithAnswersPublic (\PDO $pdo)
     {
         try {
@@ -160,6 +192,10 @@ class Content
         }
     }
 
+    /**
+     * @param \PDO $pdo
+     * @return array
+     */
     public function getAnswersPublic (\PDO $pdo)
     {
         try {
@@ -190,6 +226,10 @@ class Content
         }
     }
 
+    /**
+     * @param \PDO $pdo
+     * @return array
+     */
     public function getAdmins(\PDO $pdo)
     {
         try {

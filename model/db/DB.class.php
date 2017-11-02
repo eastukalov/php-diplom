@@ -3,7 +3,10 @@ namespace model\db;
 require_once 'connection.php';
 
 class DB {
-    
+
+    /**
+     * @return \PDO
+     */
     public function getDBConnect ()
     {
         try {

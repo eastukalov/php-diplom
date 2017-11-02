@@ -1,93 +1,28 @@
 <?php
-require_once 'vendor/autoload.php';
-use model\data\Content;
-use model\db\DB;
-use model\data\Question;
-use model\data\User;
-use model\data\Admin;
+use controllers\Main;
+use controllers\Admins;
+use controllers\Categories;
+use controllers\Questions;
+use controllers\Questions_Edit;
 use model\assets\Assist;
-session_start();
+require_once 'vendor/autoload.php';
+
 $assist = new Assist();
 
-$loader = new Twig_Loader_Filesystem('templates');
-$twig = new Twig_Environment($loader, array(
-    'cache'=>'compilation_cache',
-    'auto_reload'=>true
-));
-
-$categories = [];
-$questions = [];
-$answers = [];
-$error = '';
-$formAdminHide = null;
-$admin = null;
-$mode = [
-    'question'=>'guest',
-    'role'=>'guest',
-    'userName'=>''
-];
-
-try {
-    $pdo = (new DB())->getDBConnect();
-    $content = new Content();
-
-    if ($assist->isPost()) {
-
-        if (isset($_POST['save'])) {
-            $temp = new Question();
-            $userName = '';
-            $userEmail = '';
-
-            if (isset($_POST['name'], $_POST['email'])) {
-                $userName = $_POST['name'];
-                $userEmail = $_POST['email'];
-            } elseif (isset($_SESSION['userName'], $_SESSION['userEmail'])) {
-                $userName = $_SESSION['userName'];
-                $userEmail = $_SESSION['userEmail'];
-            }
-
-            $temp->setUser(new User(0, $userName, $userEmail))
-                ->setQuestionName(isset($_POST['question']) ? $_POST['question'] : '')
-                ->setCategoryId(isset($_POST['category']) ? $_POST['category'] : null);
-            $temp->checkInsert();
-            $temp->insertQuestion($pdo);
-        } elseif (isset($_POST['admin'], $_POST['login'], $_POST['password'])) {
-            $formAdminHide = false;
-            $temp = new Admin(0, $_POST['login'], $_POST['password']);
-            $admin = $temp;
-            $temp->checkAdmin($pdo);
-            $temp->validateAdmin($pdo);
-            $formAdminHide = true;
-        }
-    }
-
-    if ($assist->isPost()) {
-        header('Location: index.php');
-        exit;
-    }
-
-    $categories = $content->getCategories($pdo);
-    $questions = $content->getQuestionsWithAnswersPublic($pdo);
-    $answers = $content->getAnswersPublic($pdo);
-
-    if (!empty($_SESSION['admin'])) {
-        $mode['role'] = 'admin';
-    }
-
-    if (!empty($_SESSION['userId'])) {
-        $mode['question'] = 'user';
-        $mode['userName'] = $_SESSION['userName'];
-    }
-} catch (\Exception $e) {
-    $error = $e->getMessage();
+if ((empty($_POST) && empty($_GET)) ||
+    !empty($_POST['saveMain']) ||
+    !empty($_POST['adminMain'])) {
+    (new Main())->controllerMain();
+} elseif (!empty($_GET['mode']) && $_GET['mode'] === 'Admins') {
+    (new Admins())->controllerAdmins();
+} elseif (!empty($_GET['mode']) && $_GET['mode'] === 'Categories') {
+    (new Categories())->controllerCategories();
+} elseif (!empty($_GET['mode']) && $_GET['mode'] === 'Questions') {
+    (new Questions())->controllerQuestions();
+} elseif (!empty($_GET['mode']) && $_GET['mode'] === 'Questions_edit') {
+    (new Questions_Edit())->controllerQuestionsEdit();
+} else {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 400 Bad Request');
+    echo '400 Bad Request';
+    exit;
 }
-
-echo $twig->render('main.twig', [
-    'categories'=>$categories,
-    'questions'=>$questions,
-    'answers'=>$answers,
-    'admin'=>$admin,
-    'error'=>$error,
-    'mode'=>$mode,
-    'formAdminHide'=>$formAdminHide
-]);

@@ -8,8 +8,8 @@
     <title>Администрирование</title>
 
     <!-- Bootstrap -->
-    <link href="../vendor/twbs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/datatables.min.css"/>
+    <link href="vendor/twbs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/datatables.min.css"/>
 
 
 
@@ -39,18 +39,18 @@
                         {% if tab == 1 %}
                             class="active"
                         {% endif %}
-                    ><a href="../controllers/admins.php">Администраторы</a></li>
+                    ><a href="index.php?mode=Admins">Администраторы</a></li>
                     <li
                         {% if tab == 2 %}
                             class="active"
                         {% endif %}
-                    ><a href="../controllers/categories.php">Темы</a></li>
+                    ><a href="index.php?mode=Categories">Темы</a></li>
                     <li
                         {% if tab == 3 %}
                             class="active"
                         {% endif %}
-                    ><a href="../controllers/questions.php">Вопросы</a></li>
-                    <li><a href="../index.php">На страницу</a></li>
+                    ><a href="index.php?mode=Questions">Вопросы</a></li>
+                    <li><a href="index.php">На страницу</a></li>
                 </ul>
             </div>
         </div>

@@ -7,44 +7,74 @@ class Answer extends Question
     private $answerId;
     private $answerName;
 
+    /**
+     * Answer constructor.
+     * @param int $categoryId
+     * @param string $categoryName
+     * @param int $questionId
+     * @param string $questionName
+     * @param \DateTime $date
+     * @param User $user
+     * @param Status $status
+     * @param int $answerId
+     * @param string $answerName
+     */
     public function __construct(
         $categoryId = null,
         $categoryName = '',
         $questionId = null,
-        $questionName = '', $date = null,
+        $questionName = '',
+        $date = null,
         $user = null,
         $status = null,
         $answerId = 0,
         $answerName = ''
     ) {
-        parent::__construct ($categoryId, $categoryName, $questionId, $questionName, $date, $user, $status);
+        parent::__construct ($categoryId, $categoryName, $questionId, $questionName, $date,  $user, $status);
         $this->answerId = $answerId;
         $this->answerName = $answerName;
     }
 
 
+    /**
+     * @return int
+     */
     public function getAnswerId()
     {
         return $this->answerId;
     }
 
+    /**
+     * @param int $answerId
+     * @return $this
+     */
     public function setAnswerId($answerId)
     {
         $this->answerId = $answerId;
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getAnswerName()
     {
         return $this->answerName;
     }
 
+    /**
+     * @param string $answerName
+     * @return $this
+     */
     public function setAnswerName($answerName)
     {
         $this->answerName = $answerName;
         return $this;
     }
 
+    /**
+     * @param \PDO $pdo
+     */
     public function updateAnswer(\PDO $pdo)
     {
         try {
@@ -57,6 +87,9 @@ class Answer extends Question
         }
     }
 
+    /**
+     * @param \PDO $pdo
+     */
     public function insertAnswer(\PDO $pdo)
     {
         try {
@@ -69,6 +102,10 @@ class Answer extends Question
         }
     }
 
+    /**
+     * @param \PDO $pdo
+     * @return string
+     */
     public function selectAnswer(\PDO $pdo)
     {
         try {
@@ -82,6 +119,9 @@ class Answer extends Question
         }
     }
 
+    /**
+     * @param \PDO $pdo
+     */
     public function deleteAnswer(\PDO $pdo)
     {
         try {

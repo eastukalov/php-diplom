@@ -36,7 +36,7 @@
                 Задать вопрос
             </button>
             {% if mode['role'] == 'admin' %}
-                <a href="controllers/admins.php" class="btn btn-success btn-sm">Администрирование</a>
+                <a href="index.php?mode=Admins" class="btn btn-success btn-sm">Администрирование</a>
             {% else %}
                 <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#formModalAdmin">
                     Войти
@@ -124,7 +124,7 @@
                     </div>
                     <div class="form-actions">
                         <input type="submit" class="btn btn-default" data-dismiss="modal" value="Отмена">
-                        <input id="save" type="submit" class="btn btn-primary" value="Сохранить" name="save">
+                        <input id="save" type="submit" class="btn btn-primary" value="Сохранить" name="saveMain">
                     </div>
                 </form>
 
@@ -167,7 +167,7 @@
 
                     <div class="form-actions">
                         <input type="submit" class="btn btn-default" data-dismiss="modal" value="Отмена">
-                        <input id="save" type="submit" class="btn btn-primary" value="Войти" name="admin">
+                        <input id="save" type="submit" class="btn btn-primary" value="Войти" name="adminMain">
                     </div>
                 </form>
 

@@ -8,17 +8,29 @@ class Category
     private $categoryName;
     private $count = [];
 
+    /**
+     * Category constructor.
+     * @param int $categoryId
+     * @param string $categoryName
+     */
     public function __construct($categoryId = 0, $categoryName = '')
     {
         $this->categoryId = $categoryId;
         $this->categoryName = $categoryName;
     }
 
+    /**
+     * @return int
+     */
     public function getCategoryId()
     {
         return $this->categoryId;
     }
 
+    /**
+     * @param int $categoryId
+     * @return $this
+     */
     public function setCategoryId($categoryId)
     {
         $this->categoryId = $categoryId;
@@ -26,28 +38,46 @@ class Category
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getCategoryName()
     {
         return $this->categoryName;
     }
 
+    /**
+     * @param string $categoryName
+     * @return $this
+     */
     public function setCategoryName($categoryName)
     {
         $this->categoryName = $categoryName;
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getCount()
     {
         return $this->count;
     }
 
-    public function setCount($count)
+    /**
+     * @param array $count
+     * @return $this
+     */
+    public function setCount(array $count)
     {
         $this->count = $count;
         return $this;
     }
 
+    /**
+     * @param \PDO $pdo
+     * @return object
+     */
     public function selectCategory(\PDO $pdo)
     {
         try {
@@ -60,6 +90,9 @@ class Category
         }
     }
 
+    /**
+     * @param \PDO $pdo
+     */
     public function deleteCategory(\PDO $pdo)
     {
         try {
@@ -71,6 +104,9 @@ class Category
         }
     }
 
+    /**
+     * @param \PDO $pdo
+     */
     public function checkCategory(\PDO $pdo)
     {
         try {
@@ -95,6 +131,9 @@ class Category
         }
     }
 
+    /**
+     * @param \PDO $pdo
+     */
     public function updateCategory(\PDO $pdo)
     {
         try {
@@ -106,6 +145,9 @@ class Category
         }
     }
 
+    /**
+     * @param \PDO $pdo
+     */
     public function insertCategory(\PDO $pdo)
     {
         try {
